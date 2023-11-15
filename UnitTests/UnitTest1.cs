@@ -1,8 +1,9 @@
-using BNPISINClient.Interfaces;
-using BNPISINClient.Models;
-using BNPISINClient.Services;
+using ApiClient.Interfaces;
+using ApiClient.Models;
+using ApiClient.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Xunit;
 using Moq;
 
 namespace UnitTests
@@ -172,25 +173,6 @@ namespace UnitTests
             #endregion
 
 
-        }
-    }
-
-    class DummyHttpMessageHandler : HttpMessageHandler
-    {
-        public DummyHttpMessageHandler()
-        {
-            HttpResponse = new HttpResponseMessage
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Content = new StringContent("{\"ISIN\":\"ABCDEFGHIJKL\" ,\"price\" : 10}")
-            };
-        }
-
-        public HttpResponseMessage HttpResponse { get; set; }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(HttpResponse);
         }
     }
 }

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebClient\BNPISINClient.csproj" />
+    <ProjectReference Include="..\ApiClient\ApiClient.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,9 @@
-﻿using BNPISINClient.Interfaces;
-using BNPISINClient.Models;
+﻿using ApiClient.Interfaces;
+using ApiClient.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using static System.Net.WebRequestMethods;
 
-namespace BNPISINClient.Services
+namespace ApiClient.Services
 {
     public class SecurityService : ISecurityService
     {

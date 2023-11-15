@@ -1,6 +1,6 @@
-﻿using BNPISINClient.Models;
+﻿using ApiClient.Models;
 
-namespace BNPISINClient.Interfaces
+namespace ApiClient.Interfaces
 {
     public interface IRepository
     {

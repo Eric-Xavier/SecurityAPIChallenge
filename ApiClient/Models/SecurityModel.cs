@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BNPISINClient.Models
+namespace ApiClient.Models
 {
     public class SecurityModel
     {

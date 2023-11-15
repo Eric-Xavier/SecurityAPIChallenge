@@ -1,7 +1,7 @@
-﻿using BNPISINClient.Interfaces;
-using BNPISINClient.Models;
+﻿using ApiClient.Interfaces;
+using ApiClient.Models;
 
-namespace BNPISINClient.Services
+namespace ApiClient.Services
 {
     public class RepositoryService : IRepository
     {

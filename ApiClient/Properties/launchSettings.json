@@ -9,11 +9,11 @@
     }
   },
   "profiles": {
-    "BNPISINClient": {
+    "ApiClient": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "api/security",
+      "launchUrl": "",
       "applicationUrl": "http://localhost:5289",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
