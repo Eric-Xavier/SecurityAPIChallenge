@@ -56,8 +56,9 @@ namespace ApiClient.Services
                 var parameters = new DynamicParameters();
                 parameters.Add("@isin", model.ISINCode, DbType.String);
                 parameters.Add("@price", model.Price, DbType.Decimal);
+                
 
-                var result = await connection.ExecuteScalarAsync("INSERT INTO Securities (isin, price) VALUES (@isin, @price);");
+                var result = await connection.ExecuteScalarAsync("INSERT INTO Securities (isin, price) VALUES (@isin, @price);  SELECT @@ROWCOUNT;", parameters);
                 return result != null;
 
             }

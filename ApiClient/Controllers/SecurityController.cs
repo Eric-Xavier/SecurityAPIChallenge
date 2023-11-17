@@ -25,9 +25,9 @@ namespace ApiClient.Controllers
         [HttpPost]
         [SwaggerISINExamples]
         [Produces("application/json")]
-        public IActionResult Index(List<string> securities)
+        public async Task<IActionResult> Index(List<string> securities)
         {
-            var response = _service.ExecuteAsync(securities);
+            var response = await _service.ExecuteAsync(securities);
             return Json(response);
         }
     }

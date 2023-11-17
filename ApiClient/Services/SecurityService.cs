@@ -1,13 +1,12 @@
 ﻿using ApiClient.Interfaces;
 using ApiClient.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using static System.Net.WebRequestMethods;
+using System.Text.Json;
 
 namespace ApiClient.Services
 {
     public class SecurityService : ISecurityService
     {
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
         private IRepository _repository { get; set; }
         private ILogger<SecurityService> _logger { get; set; }
         private string apiURL { get; }
@@ -24,30 +23,39 @@ namespace ApiClient.Services
         }
 
         private async Task<bool> ExecuteAsync(string ISIN) {
-
-            if(!ValidateSecurityCode(ISIN))
-                return false;
-            
-
-            var apiResponse = await _httpClient
-                .GetFromJsonAsync<SecurityModel>(apiURL.Replace("{isin}", ISIN));
-
-
-            if (apiResponse == null)
+            try
             {
-                _logger.LogError("ISIN not found");
+                if (!ValidateSecurityCode(ISIN))
+                    return false;
+
+                //workaround
+                _httpClient = new HttpClient(new FakeResponse());
+
+                var apiResponse = await _httpClient
+                    .GetFromJsonAsync<SecurityModel>(apiURL.Replace("{isin}", ISIN));
+
+
+                if (apiResponse == null)
+                {
+                    _logger.LogError("ISIN not found in webservice");
+                    return false;
+                }
+
+
+                var isStored = await _repository.Insert(apiResponse);
+                if (!isStored)
+                {
+                    _logger.LogError("Not Stored on database");
+                    return false;
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to Process ISIN:{isin}", ISIN);
                 return false;
             }
-
-            
-            var isStored = await _repository.Insert(apiResponse);
-            if (!isStored)
-            {
-                _logger.LogError("Not Stored on database");
-                return false;
-            }
-
-            return true;
 
         }
 
@@ -67,5 +75,28 @@ namespace ApiClient.Services
                 && code.Length == 12;
         }
 
+    }
+
+
+    internal class FakeResponse : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(CreateHttpResponse(request?.RequestUri?.Segments?.Last() ?? "abcdefghjkl"));
+        }
+
+        private HttpResponseMessage CreateHttpResponse(string id)
+        {
+            var response = new SecurityModel { 
+                ISINCode= id ,
+                Price = decimal.Parse($"{Random.Shared.Next(1000, 99999)},{Random.Shared.Next(0, 99)}") 
+            };
+
+            return new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = JsonContent.Create<SecurityModel>(response)
+            };
+        }
     }
 }
