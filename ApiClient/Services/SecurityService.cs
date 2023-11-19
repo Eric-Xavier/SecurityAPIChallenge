@@ -69,7 +69,7 @@ namespace ApiClient.Services
             return securityCodeProcessed;
         }
 
-        private bool ValidateSecurityCode(string code)
+        private static bool ValidateSecurityCode(string code)
         {
             return !string.IsNullOrWhiteSpace(code)
                 && code.Length == 12;
@@ -77,7 +77,9 @@ namespace ApiClient.Services
 
     }
 
-
+    /// <summary>
+    /// @todo: remove as soon as implement json-server component
+    /// </summary>
     internal class FakeResponse : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

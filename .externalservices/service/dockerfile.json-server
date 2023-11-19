@@ -1,0 +1,7 @@
+FROM node:21-alpine
+RUN npm install -g json-server --save-dev
+
+WORKDIR /app
+COPY ./db.json /app/
+
+CMD json-server --watch db.json --port 4000 --host 0.0.0.0 --id isin --read-only

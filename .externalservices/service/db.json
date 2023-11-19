@@ -1,0 +1,8 @@
+{
+    "securityprice": [
+        {   "isin": "abcabcabcabc", "price": 123456.78    },
+        {   "isin": "abcdefghijkl", "price": 1.99         },
+        {   "isin": "abababababab", "price": 1565.78      },
+        {   "isin": "asdfasdfasdf", "price": 98765.78     }
+    ]
+}
