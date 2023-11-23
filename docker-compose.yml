@@ -62,3 +62,6 @@ services:
 
 #docker compose down
 #docker compose up -d --wait --force-recreate
+
+#docker pull mcr.microsoft.com/mssql-tools
+# sqlcmd -S 127.0.0.1 -U sa -P MyPassword100 > select @@version > go

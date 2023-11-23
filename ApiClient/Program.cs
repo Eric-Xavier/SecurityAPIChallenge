@@ -16,6 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<IStockService, StockService>(client =>
+{
+     client.BaseAddress = new Uri(builder.Configuration[StockService.ServiceApiUrlConfigName]);
+});
+
 builder.Services.AddTransient<IRepository, RepositoryService>();
 builder.Services.AddTransient<ISecurityService, SecurityService>();
 builder.Services.AddEndpointsApiExplorer();
@@ -26,8 +31,6 @@ builder.Services.AddSwaggerGen(options => {
         Title = "Security API Challenge",
         Description = "An Web API that process data in a dummy service",
         Contact = new OpenApiContact { Name = "Eric Xavier" },
-
-
     });
     options.SchemaFilter<SwaggerCustomSchemaValues>();
 });

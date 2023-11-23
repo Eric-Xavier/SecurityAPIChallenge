@@ -1,33 +1,28 @@
 using ApiClient.Interfaces;
 using ApiClient.Models;
 using ApiClient.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Moq;
+using ApiClient.Helper;
+
 
 namespace UnitTests
 {
     public class UnitTest1
     {
         private readonly Mock<ILogger<SecurityService>> logger;
-        private readonly IConfiguration configuration;
+        private Mock<IStockService> _stockService;
+        
 
         public UnitTest1()
         {
             logger = new Mock<ILogger<SecurityService>>();
-
-            var appSettings = new Dictionary<string, string>(){
-                 {SecurityService.ServiceApiUrlConfigName, "http://fakeurl.com/{param1}" }
-         };
-
-            configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(appSettings)
-                .Build();
-
-
+            _stockService = new Mock<IStockService>();
+            
+            _stockService.Setup(x=>x.GetSecurityPrice(It.IsAny<string>()))
+                .ReturnsAsync(new SecurityModel{ ISINCode = "US4581401001", Price = 9999.99m });
         }
-
 
 
 
@@ -36,17 +31,16 @@ namespace UnitTests
         public void HappyPathTest()
         {
             #region arrange
-            var handler = new DummyHttpMessageHandler();
-            var _httpClient = new HttpClient(handler);
 
             var _repo = new Mock<IRepository>();
             _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
                 .ReturnsAsync(true);
+
             #endregion
 
             #region Act
-            var service = new SecurityService(_httpClient, _repo.Object, logger.Object, configuration);
-            var result = service.ExecuteAsync(new List<string>() { "abcdefghijkl" });
+            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var result = service.ExecuteAsync(new List<string>() { "US4581401001" });
             #endregion
 
 
@@ -63,16 +57,16 @@ namespace UnitTests
         public async Task ValidationScenarios(string[] expectedScenarios, bool expectedResult)
         {
             #region arrange
-            var handler = new DummyHttpMessageHandler();
-            var _httpClient = new HttpClient(handler);
-
+            
             var _repo = new Mock<IRepository>();
             _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
                 .ReturnsAsync(true);
+            
+            
             #endregion
 
             #region Act
-            var service = new SecurityService(_httpClient, _repo.Object, logger.Object, configuration);
+            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
             var result = await service.ExecuteAsync(expectedScenarios);
 
             Assert.Equal(expectedResult, result.First().Value);
@@ -81,25 +75,69 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(ValidationSkippedScenariosMemberData))]
-        public async Task ValidateSkippedScenarios(string[] expectedScenarios, bool expectedResult)
+        public async Task ValidateSkippedScenarios(string[] expectedScenarios)
+        {
+            #region Arrange
+            var _repo = new Mock<IRepository>();
+            _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
+                .ReturnsAsync(true);
+
+            _stockService.Setup(x=>x.GetSecurityPrice(It.IsAny<string>()))
+                .ReturnsAsync(new SecurityModel{ ISINCode = "ABCDEFGHIJKL", Price = 1.99m });
+            #endregion
+
+            #region Act
+            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var result = await service.ExecuteAsync(expectedScenarios);
+            #endregion
+
+            #region Result
+            Assert.Empty(result.Where(x=>x.Value));
+            #endregion
+        }
+
+        [Fact]
+        public void NullSecurityListScenarioTestAsync()
         {
             #region arrange
-            var handler = new DummyHttpMessageHandler();
-            var _httpClient = new HttpClient(handler);
+            var moq = new Mock<ISecurityService>();
 
             var _repo = new Mock<IRepository>();
             _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
                 .ReturnsAsync(true);
+
+            _stockService.Setup(x=>x.GetSecurityPrice(It.IsAny<string>()))
+                .ReturnsAsync(new SecurityModel{ ISINCode = "ABCDEFGHIJKL", Price = 1.99m });
             #endregion
 
             #region Act
-            var service = new SecurityService(_httpClient, _repo.Object, logger.Object, configuration);
-            var result = await service.ExecuteAsync(expectedScenarios);
-
-            Assert.Empty(result);
+            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
             #endregion
+
+
+            #region Result
+            _ = Assert.ThrowsAsync<ApplicationException>(async () => await service.ExecuteAsync(It.IsAny<List<string>>()));
+            #endregion
+
         }
 
+
+
+
+        [Theory]
+        [InlineData("asdf", false)]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        [InlineData("abcabcabcabca", false)]
+        [InlineData("abcabcabcabc", true)]
+        public void ValidateModel(string isin, bool result)
+        {
+            Assert.Equal(result, ValidatorHelper.ValidateSecurityCode(isin));
+        }
+
+
+
+        #region  ArrayRange
 
         public static IEnumerable<object[]> ValidationScenariosMemberData()
         {
@@ -113,66 +151,17 @@ namespace UnitTests
 
         public static IEnumerable<object[]> ValidationSkippedScenariosMemberData()
         {
-            yield return new object[] { new string[0] { }, false };
-            yield return new object[] { new string[1] { null }, false };
+            yield return new object[] { new string[0] { } };
+            yield return new object[] { new string[1] { null } };
 
         }
 
 
 
-        [Fact]
-        public void NotFoundSecurityCodeTestAsync()
-        {
-            #region arrange
-            var moq = new Mock<ISecurityService>();
-
-            var handler = new DummyHttpMessageHandler();
-            var _httpClient = new HttpClient(handler);
-
-            var _repo = new Mock<IRepository>();
-            _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
-                .ReturnsAsync(true);
-            #endregion
-
-            #region Act
-            var service = new SecurityService(_httpClient, _repo.Object, logger.Object, configuration);
-            #endregion
+        #endregion
 
 
-            #region Result
-            _ = Assert.ThrowsAsync<ApplicationException>(async () => await service.ExecuteAsync(It.IsAny<List<string>>()));
-            #endregion
 
 
-        }
-
-
-        [Fact]
-        public void InvalidSecurityCodeTestAsync()
-        {
-            #region arrange
-            var moq = new Mock<ISecurityService>();
-            moq.Setup(m => m.ExecuteAsync(It.IsAny<List<string>>()))
-                .Throws<ApplicationException>().Verifiable("ISIN not found");
-
-            var handler = new DummyHttpMessageHandler();
-            var _httpClient = new HttpClient(handler);
-
-            var _repo = new Mock<IRepository>();
-            _repo.Setup(r => r.Insert(It.IsAny<SecurityModel>()))
-                .ReturnsAsync(true);
-            #endregion
-
-            #region Act
-            var service = new SecurityService(_httpClient, _repo.Object, logger.Object, configuration);
-            #endregion
-
-
-            #region Result
-            _ = Assert.ThrowsAsync<ApplicationException>(() => service.ExecuteAsync(It.IsAny<List<string>>()));
-            #endregion
-
-
-        }
     }
 }
