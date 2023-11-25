@@ -4,6 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>1073</NoWarn>
+    <NoWarn>8618</NoWarn>
+    <NoWarn>CS8618</NoWarn>
+    <NoWarn>CS8613</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +19,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
+
+  
 
 </Project>

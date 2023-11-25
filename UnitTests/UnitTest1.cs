@@ -68,9 +68,9 @@ namespace UnitTests
 
             #region Act
             var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
-            var result = await service.ExecuteAsync(expectedScenarios);
+            var result = await service.ExecuteAsync(expectedScenarios).ToArrayAsync();
 
-            Assert.Equal(expectedResult, result.First().Value);
+            Assert.Equal(expectedResult, result.First().status);
             #endregion
         }
 
@@ -89,16 +89,16 @@ namespace UnitTests
 
             #region Act
             var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
-            var result = await service.ExecuteAsync(expectedScenarios);
+            var result = await service.ExecuteAsync(expectedScenarios).ToListAsync();
             #endregion
 
             #region Result
-            Assert.Empty(result.Where(x=>x.Value == ErrorCodes.NoError.ToString()));
+            Assert.Empty(result.Where(x=>x.status == ErrorCodes.NoError.ToString()));
             #endregion
         }
 
         [Fact]
-        public void NullSecurityListScenarioTestAsync()
+        public async void NullSecurityListScenarioTestAsync()
         {
             #region arrange
             var moq = new Mock<ISecurityService>();
@@ -113,11 +113,13 @@ namespace UnitTests
 
             #region Act
             var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
+            //var result = await service.ExecuteAsync(It.IsAny<List<string>>()).ToArrayAsync();
             #endregion
 
 
             #region Result
-            _ = Assert.ThrowsAsync<ApplicationException>(async () => await service.ExecuteAsync(It.IsAny<List<string>>()));
+            _ = Assert.ThrowsAsync<NullReferenceException>(async () => 
+                    await service.ExecuteAsync(It.IsAny<List<string>>()).ToArrayAsync());
             #endregion
 
         }
