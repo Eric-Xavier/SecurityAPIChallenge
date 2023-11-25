@@ -5,19 +5,20 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Moq;
 using ApiClient.Helper;
+using ApiClient.Models.Enums;
 
 
 namespace UnitTests
 {
     public class UnitTest1
     {
-        private readonly Mock<ILogger<SecurityService>> logger;
+        private readonly Mock<ILogger<SecurityOrchestratorService>> logger;
         private Mock<IStockService> _stockService;
         
 
         public UnitTest1()
         {
-            logger = new Mock<ILogger<SecurityService>>();
+            logger = new Mock<ILogger<SecurityOrchestratorService>>();
             _stockService = new Mock<IStockService>();
             
             _stockService.Setup(x=>x.GetSecurityPrice(It.IsAny<string>()))
@@ -39,7 +40,7 @@ namespace UnitTests
             #endregion
 
             #region Act
-            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
             var result = service.ExecuteAsync(new List<string>() { "US4581401001" });
             #endregion
 
@@ -54,7 +55,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(ValidationScenariosMemberData))]
-        public async Task ValidationScenarios(string[] expectedScenarios, bool expectedResult)
+        public async Task ValidationScenarios(string[] expectedScenarios, string expectedResult)
         {
             #region arrange
             
@@ -66,7 +67,7 @@ namespace UnitTests
             #endregion
 
             #region Act
-            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
             var result = await service.ExecuteAsync(expectedScenarios);
 
             Assert.Equal(expectedResult, result.First().Value);
@@ -87,12 +88,12 @@ namespace UnitTests
             #endregion
 
             #region Act
-            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
             var result = await service.ExecuteAsync(expectedScenarios);
             #endregion
 
             #region Result
-            Assert.Empty(result.Where(x=>x.Value));
+            Assert.Empty(result.Where(x=>x.Value == ErrorCodes.NoError.ToString()));
             #endregion
         }
 
@@ -111,7 +112,7 @@ namespace UnitTests
             #endregion
 
             #region Act
-            var service = new SecurityService(_repo.Object, _stockService.Object, logger.Object);
+            var service = new SecurityOrchestratorService(_repo.Object, _stockService.Object, logger.Object);
             #endregion
 
 
@@ -142,10 +143,10 @@ namespace UnitTests
         public static IEnumerable<object[]> ValidationScenariosMemberData()
         {
 
-            yield return new object[] { new string[1] { "" }, false };
-            yield return new object[] { new string[1] { "   " }, false };
-            yield return new object[] { new string[1] { "abc" }, false };
-            yield return new object[] { new string[1] { "abcdefghijkl" }, true };
+            yield return new object[] { new string[1] { "" }, ErrorCodes.NotValidSecurityCode.ToString() };
+            yield return new object[] { new string[1] { "   " }, ErrorCodes.NotValidSecurityCode.ToString() };
+            yield return new object[] { new string[1] { "abc" }, ErrorCodes.NotValidSecurityCode.ToString() };
+            yield return new object[] { new string[1] { "abcdefghijkl" }, ErrorCodes.NoError.ToString() };
 
         }
 

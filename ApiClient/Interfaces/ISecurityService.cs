@@ -4,6 +4,6 @@ namespace ApiClient.Interfaces
 {
     public interface ISecurityService
     {
-        Task<List<KeyValuePair<string, bool>>> ExecuteAsync(IEnumerable<string> codeList);
+        IAsyncEnumerable<ResultModel> ExecuteAsync(IEnumerable<string> codeList);
     }
 }

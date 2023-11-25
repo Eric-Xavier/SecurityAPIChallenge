@@ -1,8 +1,13 @@
 {
     "securityprice": [
-        {   "isin": "abcabcabcabc", "price": 123456.78    },
-        {   "isin": "abcdefghijkl", "price": 1.99         },
-        {   "isin": "abababababab", "price": 1565.78      },
-        {   "isin": "asdfasdfasdf", "price": 98765.78     }
+        {   "isin": "abcabcabcabc", "price": 0.78    },
+        {   "isin": "abcdefghijkl", "price": 1.99    },
+        {   "isin": "abababababab", "price": 16.78   },
+        {   "isin": "asdfasdfasdf", "price": 97.87   },
+
+        {   "isin": "US4581401001", "price": 43.60     },
+        {   "isin": "XS0356705219", "price": 67.95     },
+        {   "isin": "CH0031240127", "price": 65.31     },
+        {   "isin": "CA9861913023", "price": 13.75     }
     ]
 }

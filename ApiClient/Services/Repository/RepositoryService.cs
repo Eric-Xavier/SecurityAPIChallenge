@@ -1,14 +1,16 @@
 ﻿using ApiClient.Interfaces;
 using ApiClient.Models;
 using Dapper;
-using Microsoft.Extensions.Options;
 using System.Data;
 using System.Data.SqlClient;
-using System.Reflection;
 
 namespace ApiClient.Services
 {
     //@todo:https://dotnet.testcontainers.org/examples/aspnet/
+
+    /// <summary>
+    /// Implementation for a repository based on Dapper with custom queries
+    /// </summary>
     public class RepositoryService : IRepository
     {
         public const string SqlServerConnectionPropertyName = "SqlServer";

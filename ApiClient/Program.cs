@@ -1,8 +1,10 @@
 using ApiClient.Controllers;
 using ApiClient.Interfaces;
 using ApiClient.Services;
+using ApiClient.Services.Stock;
 using ApiClient.Swagger;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -15,14 +17,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<IStockService, StockService>(client =>
 {
      client.BaseAddress = new Uri(builder.Configuration[StockService.ServiceApiUrlConfigName]);
 });
 
-builder.Services.AddTransient<IRepository, RepositoryService>();
-builder.Services.AddTransient<ISecurityService, SecurityService>();
+//builder.Services.AddTransient<IRepository, RepositoryService>();
+builder.Services.AddTransient<IRepository, RepositoryContext>();
+builder.Services.AddDbContext<RepositoryContext>(o=>{
+    o.UseSqlServer(builder.Configuration.GetConnectionString(RepositoryContext.SqlServerConnectionPropertyName));
+});
+builder.Services.AddTransient<ISecurityService, SecurityOrchestratorService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1", new OpenApiInfo

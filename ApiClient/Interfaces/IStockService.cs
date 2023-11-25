@@ -6,6 +6,6 @@ namespace ApiClient.Interfaces
 {
     public interface IStockService
     {
-        Task<SecurityModel> GetSecurityPrice(string security);
+        Task<SecurityModel?> GetSecurityPrice(string security);
     }
 }

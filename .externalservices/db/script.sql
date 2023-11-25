@@ -1,13 +1,14 @@
 use master;
 
-
 IF (NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = 'PaperTrading'))
 BEGIN 
-
 	CREATE DATABASE PaperTrading;
-	GO
+END
+
+GO
+
+BEGIN
 	USE PaperTrading;
-	GO
 
 	CREATE TABLE Securities( 
 		isin VARCHAR(12) NOT NULL, 
@@ -15,7 +16,6 @@ BEGIN
 		CONSTRAINT PK_SECURITIES PRIMARY KEY CLUSTERED (isin),
 		CONSTRAINT CHK_VALIDATE CHECK (len(isin)=12)
 	);
-	GO
 
 	--drop database PaperTrading;
 	--drop table Securities
