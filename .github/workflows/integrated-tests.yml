@@ -20,4 +20,4 @@ jobs:
       - name: Setup database (EF6)
         run: dotnet ef database update --context RepositoryContext --project ApiClient/ApiClient.csproj --startup-project ApiClient/ApiClient.csproj
       - name: Perform Tests  
-        run: dotnet test Tests/IntegratedTests --logger:"console;verbosity=normal" --configuration Release  
+        run: dotnet test Tests/IntegrationTests --logger:"console;verbosity=normal" --configuration Release  
