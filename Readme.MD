@@ -22,3 +22,14 @@ Ensure that you handle API requests and responses gracefully, including error ha
 6. Unit Testing Approach:
 Show how you would unit test your service.
 Explain the process by providing examples and using the "Arrange, Act, Assert" pattern. You don't need to test all your code, but demonstrate your understanding of how you would test various aspects of the service, including using mocks and providing clear explanations.
+
+---
+
+In order to solve the external dependencies, make sure you have Docker Desktop installed in your local machine,
+open this folder in a CLI interface such as powershell or cmd, 
+so run the command: <br/>
+` docker-compose up --build --force-recreate --remove-orphans` <br/>
+it should be enough to have the service up and running with:
+
+- json-server mocking an external api server
+- mssqlserver instance ready to receive the required data.

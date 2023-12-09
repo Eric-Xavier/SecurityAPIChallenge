@@ -1,0 +1,67 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+networks:
+  challenge_security:
+    driver: bridge
+
+services:
+  ##apiclient:
+  ##  container_name: apiclient
+  ##  image: apiclient
+  ##  build:
+  ##    context: .
+  ##    dockerfile: ApiClient/Dockerfile
+  ##  ports:
+  ##    - 5289:5289
+  ##  depends_on:
+  ##    - database
+
+##working
+  ##database:
+  ##  container_name: sqlserver
+  ##  image: mcr.microsoft.com/mssql/server:2022-latest
+  ##  ports:
+  ##    - 1433:1433
+  ##  environment:
+  ##    - ACCEPT_EULA=Y
+  ##    - MSSQL_SA_PASSWORD=1StrongPassword
+  ##    - MSSQL_PID=Developer
+  database:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=1StrongPassword
+      - MSSQL_PID=Developer
+    volumes:
+      - ./.externalservices\db\script.sql:/scripts/script.sql
+    command:
+      - /bin/bash
+      - -c 
+      - |
+        /opt/mssql/bin/sqlservr &
+        sleep 30
+        /opt/mssql-tools/bin/sqlcmd -U sa -P $$MSSQL_SA_PASSWORD -l 30 -e -i /scripts/script.sql
+        sleep infinity
+
+  
+  mock:
+    hostname: mock-dataprovider
+    container_name: securities-dataprovider
+    networks:
+      - challenge_security
+    build: 
+      context: ./.externalservices/service
+      dockerfile: dockerfile.json-server
+    ports:
+      - 4000:4000
+
+#docker compose down
+#docker compose up -d --wait --force-recreate
+
+#docker pull mcr.microsoft.com/mssql-tools
+# sqlcmd -S 127.0.0.1 -U sa -P MyPassword100 > select @@version > go

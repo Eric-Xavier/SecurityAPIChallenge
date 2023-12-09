@@ -1,0 +1,23 @@
+#Create a enviroment to mount database and jsonserver
+# and execute tests towards these services: https://stackoverflow.com/questions/67023441/deploy-docker-container-with-compose-github-actions
+name: Integration Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build External Dependencies
+        run: docker-compose up -d
+      - name: Install EF tool
+        run: dotnet tool install --global dotnet-ef
+      - name: Setup database (EF6)
+        run: dotnet ef database update --context RepositoryContext --project ApiClient/ApiClient.csproj --startup-project ApiClient/ApiClient.csproj
+      - name: Perform Tests  
+        run: dotnet test Tests/IntegrationTests --logger:"console;verbosity=normal" --configuration Release  
