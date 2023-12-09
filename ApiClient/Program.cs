@@ -1,6 +1,7 @@
 using ApiClient.Controllers;
 using ApiClient.Interfaces;
 using ApiClient.Services;
+using ApiClient.Services.Repository;
 using ApiClient.Services.Stock;
 using ApiClient.Swagger;
 using Microsoft.AspNetCore.Builder;
@@ -65,3 +66,7 @@ app.UseSwaggerUI(options =>
 
 
 app.Run();
+
+public partial class Program
+{
+}

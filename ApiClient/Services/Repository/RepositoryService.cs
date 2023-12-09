@@ -4,7 +4,7 @@ using Dapper;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ApiClient.Services
+namespace ApiClient.Services.Repository
 {
     //@todo:https://dotnet.testcontainers.org/examples/aspnet/
 

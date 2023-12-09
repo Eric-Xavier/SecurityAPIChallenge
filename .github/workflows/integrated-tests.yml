@@ -1,0 +1,36 @@
+#Create a enviroment to mount database and jsonserver
+# and execute tests towards these services: https://stackoverflow.com/questions/67023441/deploy-docker-container-with-compose-github-actions
+name: Integrated Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  external_dependencies:
+    runs-on: ubuntu-latest
+    container: mcr.microsoft.com/mssql/server:2022-latest
+    #with:
+    #  port: 1433
+    #  environment: 
+    #    - MSSQL_SA_PASSWORD:abracabadra
+    #    - ACCEPT_EULA=yes
+
+
+    
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.102-servicing-014397
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
+    - name: Test with dotnet
+      run: dotnet test --configuration Release
+    - name: Update database
+      run: dotnet ef database update --context DataContext --project ../ApiClient/ApiClient.csproj --startup-project ../ApiClient/ApiClient.csproj

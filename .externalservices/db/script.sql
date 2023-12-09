@@ -21,5 +21,6 @@ BEGIN
 	--drop table Securities
 	--SELECT * FROM Securities
 	--INSERT INTO dbo.Securities VALUES('abcdefghijkl', 15687.78);
+	--TRUNCATE TABLE Securities
 
 END

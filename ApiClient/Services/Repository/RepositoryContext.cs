@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ApiClient.Services.Repository.Mapper;
 
 
-namespace ApiClient.Services
+namespace ApiClient.Services.Repository
 {
     /// <summary>
     /// Implementation for database based on EntityFramwork

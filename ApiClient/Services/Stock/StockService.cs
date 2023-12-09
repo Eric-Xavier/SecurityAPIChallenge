@@ -6,8 +6,8 @@ namespace ApiClient.Services.Stock
 {
     public class StockService  : IStockService
     {
-        HttpClient _httpClient;
-        ILogger<StockService> _logger;
+        readonly HttpClient _httpClient;
+        readonly ILogger<StockService> _logger;
         public const string ServiceApiUrlConfigName = "ServiceApiBaseUrl";
 
         public StockService(HttpClient httpClient, ILogger<StockService> logger)
