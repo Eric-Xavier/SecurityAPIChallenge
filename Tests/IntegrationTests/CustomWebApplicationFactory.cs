@@ -55,7 +55,8 @@ public class CustomWebApplicationFactory
             );
 
             services.AddDbContext<IRepository, RepositoryContext>(o =>
-                o.UseSqlServer(DataBaseContainer.GetConnectionString())
+                o.UseSqlServer("Server=localhost;Database=PaperTrading;Persist Security Info=False;User Id=sa;Password=1StrongPassword;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False;Connection Timeout=300;")
+                //o.UseSqlServer(DataBaseContainer.GetConnectionString())
             );
 
             services.AddTransient<SecurityOrchestratorService>();
@@ -66,16 +67,18 @@ public class CustomWebApplicationFactory
 
     public async Task InitializeAsync() 
     {
-        await WebserviceContainer.StartAsync();
+        //await WebserviceContainer.StartAsync();
         //await DataBaseContainer.StartAsync(); 
+        await Task.Delay(1500);
         
     }
 
 
     public async new Task DisposeAsync()
     {
-        await DataBaseContainer.StopAsync();
-        await WebserviceContainer.StopAsync();
+        //await DataBaseContainer.StopAsync();
+        //await WebserviceContainer.StopAsync();
+        await Task.Delay(1000);
     }
 
     
