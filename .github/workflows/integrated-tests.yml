@@ -15,7 +15,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build External Dependencies
         run: docker-compose up -d
+      - name: Install EF tool
+        run: dotnet tool install --global dotnet-ef
       - name: Setup database (EF6)
-        run: dotnet ef database update --context DataContext --project ../ApiClient/ApiClient.csproj --startup-project ../ApiClient/ApiClient.csproj
+        run: dotnet ef database update --context DataContext --project ApiClient/ApiClient.csproj --startup-project ApiClient/ApiClient.csproj
       - name: Perform Tests  
-        run: dotnet test Tests/IntegratedTests --logger:"console;verbosity=normal" --configuration Release 
+        run: dotnet test Tests/IntegratedTests --logger:"console;verbosity=normal" --configuration Release  
