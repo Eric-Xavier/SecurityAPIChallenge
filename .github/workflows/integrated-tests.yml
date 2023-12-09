@@ -18,6 +18,6 @@ jobs:
       - name: Install EF tool
         run: dotnet tool install --global dotnet-ef
       - name: Setup database (EF6)
-        run: dotnet ef database update --context DataContext --project ApiClient/ApiClient.csproj --startup-project ApiClient/ApiClient.csproj
+        run: dotnet ef database update --context RepositoryContext --project ApiClient/ApiClient.csproj --startup-project ApiClient/ApiClient.csproj
       - name: Perform Tests  
         run: dotnet test Tests/IntegratedTests --logger:"console;verbosity=normal" --configuration Release  
